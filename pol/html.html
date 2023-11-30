@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Alquiler de Mesas y Sillas</title>
+  <link rel="stylesheet" href="estilos.css">
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <!-- Agrega el manejo de autenticación. -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+    <script src="js.js"></script>
+</head>
+<body>
+
+  <!-- Página de inicio de sesión -->
+  <div id="login-page">
+    <h2>Iniciar Sesión</h2>
+    <form id="login-form">
+      <label for="username">Usuario:</label>
+      <input type="text" id="username" required>
+      <label for="password">Contraseña:</label>
+      <input type="password" id="password" required>
+     
+      <button type="button" onclick="iniciarSesionConGoogle()">Iniciar Sesión con Google</button>
+    <button type="button" onclick="iniciarSesionConFacebook()">Iniciar Sesión con Facebook</button>
+    <button type="button" onclick="iniciarSesionConTwitter()">Iniciar Sesión con Twitter</button>
+    </form>
+    
+  </div>
+
+  <!-- Página de registro -->
+  <div id="register-page" style="display: none;">
+    <h2>Registrarse</h2>
+    <form id="register-form">
+      <label for="new-username">Nuevo Usuario:</label>
+      <input type="text" id="new-username" required>
+      <label for="new-password">Nueva Contraseña:</label>
+      <input type="password" id="new-password" required>
+     
+    </form>
+    
+  </div>
+
+  <!-- Página principal después del inicio de sesión -->
+  <div id="main-page" style="display: none;">
+    <h2>Bienvenido, <span id="user-display"></span>!</h2>
+
+    <!-- Visualización de mesas y sillas -->
+    <div id="furniture-display">
+      <h3>Mesas en Renta</h3>
+      <div id="table-images"><!-- Imágenes de mesas --></div>
+
+      <h3>Sillas en Renta</h3>
+      <div id="chair-images"><!-- Imágenes de sillas --></div>
+    </div>
+
+    <!-- Formulario de renta -->
+    <div id="rental-form" style="display: none;">
+      <h3>Realizar Renta</h3>
+      <form id="rental-details-form">
+        <label for="client-name">Nombre del Cliente:</label>
+        <input type="text" id="client-name" required>
+        <label for="client-address">Dirección del Cliente:</label>
+        <input type="text" id="client-address" required>
+        <label for="table-quantity">Cantidad de Mesas:</label>
+        <input type="number" id="table-quantity" min="0" required>
+        <label for="chair-quantity">Cantidad de Sillas:</label>
+        <input type="number" id="chair-quantity" min="0" required>
+        <label for="rent-date">Fecha de Renta:</label>
+        <input type="date" id="rent-date" required>
+        <button type="button" onclick="submitRental()">Confirmar Renta</button>
+      </form>
+    </div>
+
+    <button type="button" onclick="terminaSesion()">Terminar Sesión</button>
+  </div>
+
+  <script>
+    // Funciones JavaScript
+    function showRegisterPage() {
+      document.getElementById('login-page').style.display = 'none';
+      document.getElementById('register-page').style.display = 'block';
+    }
+
+    function showLoginPage() {
+      document.getElementById('register-page').style.display = 'none';
+      document.getElementById('login-page').style.display = 'block';
+    }
+
+    function login() {
+      // Implementar lógica de inicio de sesión
+      // Aquí deberías verificar el usuario y la contraseña
+      // y redirigir al usuario a la página principal si son correctos
+    }
+
+    function register() {
+      // Implementar lógica de registro
+      // Aquí deberías crear una nueva cuenta de usuario
+      // y redirigir al usuario a la página principal
+    }
+
+    function logout() {
+      // Implementar lógica de cierre de sesión
+      // Aquí deberías limpiar la información de la sesión y redirigir al usuario a la página de inicio de sesión
+    }
+
+    function showMainPage(username) {
+      document.getElementById('login-page').style.display = 'none';
+      document.getElementById('register-page').style.display = 'none';
+      document.getElementById('main-page').style.display = 'block';
+      document.getElementById('user-display').textContent = username;
+
+      // Aquí puedes cargar las imágenes de mesas y sillas dinámicamente en 'table-images' y 'chair-images'
+      // Puedes utilizar un bucle para crear elementos de imagen y agregarlos al DOM
+
+      // Por ejemplo:
+      // for (let i = 1; i <= 5; i++) {
+      //   const tableImage = document.createElement('img');
+      //   tableImage.src = `mesa${i}.jpg`; // Reemplaza con la ruta de tus imágenes de mesas
+      //   document.getElementById('table-images').appendChild(tableImage);
+      // }
+    }
+
+    function submitRental() {
+      // Implementar lógica para enviar detalles de la renta al servidor
+      // Puedes recopilar los detalles del formulario y realizar una solicitud AJAX al servidor
+    }
+  
+    //@ts-check
+    /** Conexión al sistema de autenticación de Firebase. */
+    // @ts-ignore
+    const auth = firebase.auth();
+    /** Tipo de autenticación de usuarios con Google. */
+    // @ts-ignore
+    const googleProvider = new firebase.auth.GoogleAuthProvider();
+    /* Configura el proveedor de Google para que permita seleccionar de una
+     * lista. */
+    googleProvider.setCustomParameters({ prompt: "select_account" });
+
+    /** Tipo de autenticación de usuarios con Facebook. */
+    // @ts-ignore
+    const facebookProvider = new firebase.auth.FacebookAuthProvider();
+    /* Configura el proveedor de Facebook para que permita seleccionar de una
+     * lista. */
+    facebookProvider.setCustomParameters({ prompt: "select_account" });
+
+    /** Tipo de autenticación de usuarios con Twitter. */
+    // @ts-ignore
+    const twitterProvider = new firebase.auth.TwitterAuthProvider();
+    /* Configura el proveedor de Twitter para que permita seleccionar de una
+     * lista. */
+    twitterProvider.setCustomParameters({ prompt: "select_account" });
+
+    /* Recibe una función que se invoca cada que hay un cambio en la
+     * autenticación y recibe el modelo con las características del usuario.*/
+    auth.onAuthStateChanged(
+      /** Recibe las características del usuario o null si no ha iniciado
+       * sesión. */
+      (usuarioAuth) => {
+        if (usuarioAuth && usuarioAuth.email) {
+          // Usuario aceptado.
+          // @ts-ignore Muestra el email registrado.
+          email.value = usuarioAuth.email;
+          // @ts-ignore Muestra el nombre registrado.
+          nombre.value = usuarioAuth.displayName;
+          // @ts-ignore Muestra el avatar registrado.
+          avatar.src = usuarioAuth.photoURL;
+        }
+      },
+      // Función que se invoca si hay un error al verificar el usuario.
+      procesaError
+    );
+
+    /** Inicia sesión con Google. */
+    function iniciarSesionConGoogle() {
+      auth.signInWithRedirect(googleProvider);
+    }
+
+    /** Inicia sesión con Facebook. */
+    function iniciarSesionConFacebook() {
+      auth.signInWithRedirect(facebookProvider);
+    }
+
+    /** Inicia sesión con Twitter. */
+    function iniciarSesionConTwitter() {
+      auth.signInWithRedirect(twitterProvider);
+    }
+
+    /** Termina la sesión. */
+    async function terminaSesion() {
+      try {
+        await auth.signOut();
+      } catch (e) {
+        procesaError(e);
+      }
+    }
+    /** Procesa un error. Muestra el objeto en la consola y un cuadro de
+     * alerta con el mensaje.
+     * @param {Error} e descripción del error. */
+    function procesaError(e) {
+      console.log(e);
+      alert(e.message);
+    }
+  </script>
+
+</body>
+</html>
